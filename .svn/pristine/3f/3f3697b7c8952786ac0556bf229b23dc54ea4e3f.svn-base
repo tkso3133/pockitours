@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="format-detection" content="telephone=no"/>
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi"/>
+        <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+		<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCyY2ztLaaw2JH00tB7FTVStyXf0Ximq7E&sensor=true"></script>
+		<script type="text/javascript" src="js/general.js"></script>
+		<script type="text/javascript" src="js/tourDetails.js"></script>
+		<script type="text/javascript" src="js/jPanelMenu.1.3.0.js"></script>
+		<script type="text/javascript" src="js/jquery-ui-1.10.3.min.js"></script>
+		<script type="text/javascript" src="js/jquery.flexslider.js"></script>
+		<script type="text/javascript" src="js/spin.min.js"></script>
+        <script type="text/javascript" src="js/cordova.js"></script>
+		
+		<link rel="stylesheet" type="text/css" href="css/general.css"/>
+		<link rel="stylesheet" type="text/css" href="css/tourDetails.css"/>
+		<link rel="stylesheet" type="text/css" href="css/jquery-ui-1.10.3.css"/>
+		<link rel="stylesheet" type="text/css" href="css/flexslider.css"/>
+		<link rel="stylesheet" href="http://yui.yahooapis.com/3.11.0/build/cssbutton/cssbutton.css">
+		
+        <title>Tours Details</title>            	
+    </head>
+
+    <body>   
+    	<div id="foo" class="foo">
+    		<div class="menu-trigger"></div>
+        		<ul id="menu" style="display: none;">
+	           		<li class="liIntro"> <a href="javascript:liIntroClick()">Intro</a></li>        		
+            		<li class="liSelectDifferentTour"><a href="javascript:liSelectADifferentTourClick()">Tours</a></li>
+        		</ul>
+			<div id="top" class="top">
+        		<div id="topCenter">
+        			<div id="topContainerWithLogoWithWords">
+        				<img id="logoWithWords" src="img/logo_with_words.png"/>
+        			</div>
+        		</div>
+        	</div>
+		
+		<div class="scroll" id="scrollDiv">
+			<div id="mainPhotos">
+				<!-- <div class="flexslider">
+					<ul class="slides">
+ 						<li>
+ 							<img class="imgSlider" src="img/tour1/rainbow1.jpg"/> 		      			
+ 						</li>
+ 						<li>
+   							<img class="imgSlider" src="img/tour1/rainbow2.jpg"/>
+ 						</li>
+ 						<li>
+   							<img class="imgSlider" src="img/tour1/rainbow3.jpg"/>
+ 						</li>
+					</ul>
+				</div> -->
+			</div>
+		
+			<div class="blueTourInformationBar">
+				<img class="imgBlueOpenBook" src="img/blue_open_book.png"/>
+			</div>
+		
+			<div class="tourDescription">
+				<ul class="tourStats"></ul>
+			
+				<div class="separator"></div>				
+			</div>
+		
+			<div class="greenFamousLandmarksBar">
+				<img class="imgGreenFlag" src="img/green_flag.png"/>
+				<label id="lblFamousLandmarks">Famous Landmarks</label>
+			</div>
+		
+			<ul id="locationList" class="locationList"></ul>
+		</div>
+		
+        <div id="bottom" class="bottom"></div>
+        
+        </div>
+    </body>                              
+</html>
+

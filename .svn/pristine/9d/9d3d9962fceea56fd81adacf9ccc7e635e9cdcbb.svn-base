@@ -1,0 +1,30 @@
+.blueTourInformationBar { display: none; }
+.imgBlueOpenBook { float: left; height: 60%; width: 4%; margin: 8px 0 0 5px; display: none; }
+#lblTourName { float: left; }
+.tourDescription { width: 95%; margin: 10px auto; }
+.greenFamousLandmarksBar { width: 100%; height: 4%; background-color: #75c555; display: none; }
+.imgGreenFlag { float: left; height: 60%; width: 3%; margin: 7px 0 0 8px; display: none; }
+#lblFamousLandmarks { float: left; margin: 7px 0 0 10px; }
+#locationList li { background: #f1f3f4; border-bottom: 1px solid #bbb; border-top: 1px solid #fff; }
+#locationList li a { background: #f1f3f4; }
+a { display: block; width: 100%; height: 7%; }
+#imgYellowCheckMark { height: 16px; width: 16px; float: left; margin: 7px 0px 0px 5px; }
+#imgNextArrow { height: 15px; width: 10px; float: right; margin: 8px 3px 0px 0px; }
+#locationContainerWithLink { float: left; margin: 15px 0px 0px 10px; }
+#locationContainerWithoutLink { float: left; margin: 15px 0px 0px 30px; }
+.imgSlider { height: 100%; width: auto; max-width: 100%; margin: 0 auto; text-align: center; }
+.bottom { background: url(../img/bottom_grey_fade.png) repeat-x; height: 8%; float: left; width: 100%; display: none; }
+.locationList { display: none; }
+.tourDescription { display: none; }
+.resumeButton { float: right; height: 35px; width: 60px; margin: 5px 12% 0 0; display: none; }
+.startOverButton { float: left; height: 35px; width: 65px; margin: 5px 0 0 12%; display: none; }
+.startButton { width: 35px; margin: 5px auto 0 auto; display: none; }
+#imgStart { height: 15px; width: 15px; margin: 5px 0 0 10px; float: left; }
+#imgStartOver { height: 15px; width: 25px; margin: 5px 0 0 19px; float: left; }
+#imgResume { height: 15px; width: 20px; margin: 5px 0 0 15px; float: left; }
+#bottom a { color: grey; height: 100%; float: left; }
+#map-canvas { height: 60%; width: 100%; }
+.separator { width: 100%; height: 2px; margin: 10px auto; background-color: #bbb; display: none; }
+#lblStart { float: left; }
+.ui-dialog-titlebar { background: url(../img/white_flag.png) no-repeat; background-size: 15px 20px; background-position: 5% 10%; margin: 5px 0 0 0; }
+.ui-dialog .ui-dialog-content { height: 230px !important; }

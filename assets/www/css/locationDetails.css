@@ -1,0 +1,20 @@
+#blueLocationInformationBar { width: 100%; height: 60px; background-color: #27beda; }
+#imgBlueOpenBook { float: left; height: 50px; width: 50px; margin: 8px 0 0 5px; }
+#lblLocationName { float: left; margin: 0 0 0 10px; font-size: 50px; }
+#locationDescription { width: 95%; margin: 10px auto; font-size: 50px;}
+#bottom { background: url(../img/bottom_grey_fade.png) repeat-x; height: 50px; }
+#bottom a { color: grey; width: 100%; height: 100%; }
+#photos { height: 60%; width: 100%; z-index: -1; }
+#audioButton { float: left; height: 35px; width: 50px; margin: 0px 0 0 12%; }
+#imgAudio { height: 22px; width: 25px; margin: 5px 0 0 8px; }
+#nextButton { float: right; height: 35px; width: 50px; margin: 0 5% 0 0; }
+#imgNext { height: 22px; width: 22px; margin: 5px 0 0 5px; }
+#backButton { float: right; height: 35px; width: 50px; margin: 0 5% 0 0; }
+#imgBack { height: 22px; width: 22px; margin: 5px 0 0 5px; }
+#audioButton { float: left; height: 35px; width: 50px; margin: 0 0 0 8%; }
+.imgAudio { height: 22px; width: 22px; margin: 5px 0 0 9px; }
+.imgPause { height: 22px; width: 22px; margin: 5px 0 4px 9px; display: none; }
+
+.imgSlider { height: 100%; width: auto; max-width: 100%; margin: 0 auto; text-align: center; }
+.ui-dialog-titlebar { background: url(../img/white_flag.png) no-repeat; background-size: 15px 20px; background-position: 5% 10%; margin: 5px 0 0 0; }
+.ui-dialog .ui-dialog-content { height: 230px !important; }

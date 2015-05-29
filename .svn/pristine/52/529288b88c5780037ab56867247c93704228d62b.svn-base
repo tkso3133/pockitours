@@ -1,0 +1,134 @@
+document.addEventListener("deviceready", onDeviceReady, false);
+
+function onDeviceReady() {
+    var db = window.openDatabase("TechnitoursDB", "1.0", "Technitours Database", 100000);    
+    db.transaction(populateDB, transaction_error, populateDB_success);
+    
+    var platform = device.platform;
+	if (platform == "Android") {
+		isAndroid = true;
+	} else {
+		isAndroid = false;	
+	}
+}
+
+function transaction_error(tx, error) {
+    alert("Database Error: " + error);
+}
+
+function populateDB_success() {
+	setTimeout(continueExecution, 0) //wait two seconds before continuing
+}
+
+function continueExecution() {
+	window.location.href = "../www/tours.html";
+}
+
+function populateDB(tx) {
+	tx.executeSql('DROP TABLE IF EXISTS tour');
+	tx.executeSql('DROP TABLE IF EXISTS location');
+	tx.executeSql('DROP TABLE IF EXISTS photo');
+	
+	var tourSql = 
+		"CREATE TABLE IF NOT EXISTS tour ( "+
+		"id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+		"name VARCHAR(50), " +
+		"description VARCHAR(500), " +
+		"background VARCHAR(100), " +
+		"duration VARCHAR(50), " +
+		"length VARCHAR(10))";
+	
+	var locationSql = 
+		"CREATE TABLE IF NOT EXISTS location ( "+
+		"id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+		"tour_id INT, " +
+		"name VARCHAR(50), " +
+		"description VARCHAR(1000), " +
+		"address VARCHAR(100), " +    	
+		"audio VARCHAR(100), " +
+		"location_completed boolean default false)";
+	
+	var photoSql = 
+		"CREATE TABLE IF NOT EXISTS photo ( "+
+		"id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+		"location_id INT, " +
+		"file_name VARCHAR(100))";
+	
+	tx.executeSql(tourSql);
+	tx.executeSql(locationSql);
+	tx.executeSql(photoSql);
+
+	tx.executeSql("INSERT INTO tour (id, name, description, background, duration, length) VALUES (1, 'South Battery Walking Tour', 'This is the south battery walking tour featuring scenic views of Fort Sumnter. This is the south battery walking tour featuring scenic views of Fort Sumnter. This is the south battery walking tour featuring scenic views of Fort Sumnter. This is the south battery walking tour featuring scenic views of Fort Sumnter. This is the south battery walking tour featuring scenic views of Fort Sumnter. This is the south battery walking tour featuring scenic views of Fort Sumnter.', 'tour1/wide1.jpg', '30 to 40 minutes', '1.6')");
+	tx.executeSql("INSERT INTO tour (id, name, description, background, duration, length) VALUES (2, 'West Battery Walking Tour', 'This is the west battery walking tour featuring scenic views of the ocean.', 'tour1/wide2.jpg', '1 to 2 hours', '2.3')");
+	tx.executeSql("INSERT INTO tour (id, name, description, background, duration, length) VALUES (3, 'Ghost Tour', 'This is the west battery walking tour featuring scenic views of the ocean.', 'tour1/wide3.jpg', '1 to 2 hours', '3')");
+	tx.executeSql("INSERT INTO tour (id, name, description, background, duration, length) VALUES (4, 'Downtown Tour', 'This is the west battery walking tour featuring scenic views of the ocean.', 'tour1/wide1.jpg', '1 to 2 hours', '1.2')");
+	tx.executeSql("INSERT INTO tour (id, name, description, background, duration, length) VALUES (5, 'Derek and Tommys Tour', 'This is Derek and Tommys tour.  This is the west battery walking tour featuring scenic views of the ocean.', 'tour1/wide1.jpg', '30 to 45 minutes', '1.6')");
+	
+	tx.executeSql("INSERT INTO location (id, tour_id, name, description, address, audio) VALUES (1, 1, 'Rainbow Row', 'After the Civil War, this area of Charleston devolved into near slum conditions. In the early 1900s, Dorothy Porcher Legge purchased a section of these houses numbering 99 through 101 East Bay and began to renovate them. She chose to paint these houses pink based on a colonial Caribbean color scheme. Other owners and future owners followed suit, creating the rainbow of pastel colors present today. The coloring of the houses helped keep the houses cool inside as well as give the area its name. Common myths concerning Charleston include variants on the reasons for the paint colors. According to some tales, the houses were painted in the various colors such that the intoxicated sailors coming in from port could remember which houses they were to bunk in. In other versions, the colors of the buildings date from their use as stores; the colors were used so that owners could tell illiterate slaves which building to go to for shopping.', '4525 NW 169th St. Clive, IA 50325', 'tour1/location_1.mp3')");
+	tx.executeSql("INSERT INTO location (id, tour_id, name, description, address, audio) VALUES (2, 1, 'Upper Rainbow Row', 'This is the upper part of rainbow row.', '3600 NW 169th St. Clive, IA 50325', 'tour1/location_2.mp3')");
+	tx.executeSql("INSERT INTO location (id, tour_id, name, description, address, audio) VALUES (3, 1, 'Lower Rainbow Row', 'This is the lower part of rainbow row.', '4560 NW 169th St. Clive, IA 50325', 'tour1/location_3.mp3')");
+	tx.executeSql("INSERT INTO location (id, tour_id, name, description, address, audio) VALUES (4, 2, 'Rainbow Row', 'After the Civil War, this area of Charleston devolved into near slum conditions. In the early 1900s, Dorothy Porcher Legge purchased a section of these houses numbering 99 through 101 East Bay and began to renovate them. She chose to paint these houses pink based on a colonial Caribbean color scheme. Other owners and future owners followed suit, creating the rainbow of pastel colors present today. The coloring of the houses helped keep the houses cool inside as well as give the area its name. Common myths concerning Charleston include variants on the reasons for the paint colors. According to some tales, the houses were painted in the various colors such that the intoxicated sailors coming in from port could remember which houses they were to bunk in. In other versions, the colors of the buildings date from their use as stores; the colors were used so that owners could tell illiterate slaves which building to go to for shopping.', '4525 NW 169th St. Clive, IA 50325', 'tour2/location_4.mp3')");
+	
+	tx.executeSql("INSERT INTO location (id, tour_id, name, description, address, audio, location_completed) VALUES (5, 5, 'Edmondston-Alston House', " +
+			"'Of Charlestons many fine house museums, only the Edmondston-Alston House" +
+			" (constructed in 1825 and enhanced in 1838) commands a magnificent view of Charleston Harbor. " +
+			"From its piazza, General P. T. Beauregard watched the fierce bombardment of Ft. Sumter on April 12, 1861, signaling the start of the Civil War. " +
+			"And on December 11 of the same year, the house gave refuge to General Robert E. Lee the night a wide-spreading fire threatened his safety in a Charleston hotel.', " +
+			"'1067 Rifle Range Rd, Mount Pleasant, SC 29464', 'tour5/Aperture.mp3', 'true')");
+	tx.executeSql("INSERT INTO location (id, tour_id, name, description, address, audio) VALUES (6, 5, 'Robert William Roper House', 'Robert William Roper House was built about 1838 in Charleston, South Carolina on land purchased by Robert W. Roper, a prominent cotton planter, in May 1838. The house is an outstanding example of early 19th Century Greek Revival architecture, built on a monumental scale. Although there are now two houses between the Roper House and White Point Garden to the south, at the time of its construction nothing stood between the house and the harbor beyond.', '1053 Rifle Range Rd, Mount Pleasant, SC 29464', 'tour1/location_2.mp3')");
+	tx.executeSql("INSERT INTO location (id, tour_id, name, description, address, audio) VALUES (7, 5, 'The Battery', 'The Battery is a landmark defensive seawall and promenade in Charleston, South Carolina, famous for its stately antebellum homes. Named for a civil-war coastal defence artillery battery at the site, it stretches along the lower shores of the Charleston peninsula, bordered by the Ashley and Cooper Rivers, which meet here to form Charleston harbor.', '1 East Battery, Charleston, SC 29401', 'tour1/location_3.mp3')");
+	tx.executeSql("INSERT INTO location (id, tour_id, name, description, address, audio) VALUES (8, 5, 'Joseph Verree House', 'Joseph Verree, a prosperous Charleston master carpenter, constructed this two-and-one-half-story Georgian single house circe 1767. The house, noted for its two-story curved piazza and finely detailed door surround at the main entrance (on the lower piazza, of course), is a handsome and unusual structure and a personal favorite.', '47 Church Street, Charleston, SC 29401', 'tour2/location_4.mp3')");
+	tx.executeSql("INSERT INTO location (id, tour_id, name, description, address, audio) VALUES (9, 5, 'Thomas Rose House', 'The Thomas Rose House is a National Register property located at 59 Church St. in Charleston, South Carolina. The 2 1�2-story stuccoed brick house was probably built by planter Thomas Rose in 1733. The property had been inherited by his wife, Beuler Elliott. The house has excellent examples of original Georgian woodwork in the paneling, staircase, and elsewhere. In the twentieth century an owner razed a neighboring house on the adjoining lot to the south to accommodate a large garden.', '57 Church Street, Charleston, SC 29401', 'tour2/location_4.mp3')");
+	
+	tx.executeSql("INSERT INTO photo (id, location_id, file_name) VALUES (1, 1, 'logo.png')");
+	
+	/******************************************************************************************
+	 * Church and Meeting Street Tour 
+	 ******************************************************************************************/
+	// Tour 
+	tx.executeSql("INSERT INTO tour (id, name, description, background, duration, length) VALUES (6, 'Church and Meeting Street Tour', " +
+			"'This is the Church and Meeting Street tour featuring the historic locations of Church and Meeting Street.'," +
+			" 'tour7/battery_park.jpg', '30 - 45 minutes', '1.1')");
+	
+	// Location 10
+	tx.executeSql("INSERT INTO location (id, tour_id, name, description, address, audio, location_completed) VALUES (10, 6, 'The Battery'," +
+			"'The battery is the first of many historic stops.  The battery earned its name after being host to a civil-war coastal defensive artillery battle." +
+			" It is surrounded on both sides by the Ashley and Cooper rivers which flow into Charleston Harbor" +
+			" Looking out over east battery you can see Fort Sumter in the distance, a number of flying flags make it easy to spot." +
+			" Fort Sumter is known as the starting point of the civil war, where shots were first fired at the Battle of Fort Sumter on April 12, 1861." +
+			" The battery also features many stately southern mansions and beautiful oak trees, as well as reminders of the civil war such as cannons and cannon balls." +
+			" Please feel free to walk around the park and enjoy all that it has to offer before continuing to your next stop.', " +
+			//" '2 Murray Blvd Charleston, SC 29401', 'tour7/location10.mp3', 'false')");
+			" '1053 Rifle Range Rd, Mount Pleasant SC 29464', 'tour7/location10.mp3', 'false')");
+	// Photo 10
+	tx.executeSql("INSERT INTO photo (id, location_id, file_name) VALUES (2, 10, 'battery_park.jpg')");
+
+	//Location 11
+	tx.executeSql("INSERT INTO location (id, tour_id, name, description, address, audio, location_completed) VALUES (11, 6, 'Calhoun Mansion', " +
+			"'The Calhoun Mansions was built in 1876 for a wealthy businessman, George W. Williams and is a Victorian style house. " +
+			" The mansion boasts 14 foot ceilings, 35 rooms, 23 fireplaces and is the largest single family residence in Charleston.'," +
+			"'16 Meeting St, Charleston, South Carolina 29401', 'tour7/location11.mp3', 'false')");
+	//Photo 11
+	tx.executeSql("INSERT INTO photo (id, location_id, file_name) VALUES (3, 11, 'Calhoun_Mansion.jpg')");
+	
+	//Location 12
+	tx.executeSql("INSERT INTO location (id, tour_id, name, description, address, audio, location_completed) VALUES (12, 7, 'Joseph Verree Houe', " +
+				 "'Joseph Verree, a prosperous Charleston master carpenter, constructed this two-and-one-half story Georgian single house circa 1767." +
+				 " It occupies the southernmost part of Town Lot No. 77 of the \"Grand Modell of Charles Town,\" the original plan of the city." +
+				 " The house is noted for its two-story curved piazza and finely detailed door surround at the main entrance." +
+				 " The rear addition was added in 2000. Verree, an active participant in the American Revolution, was one of" +
+				 " 26 \"mechanicks of the city\ who met at the Liberty Tree on Charles Town Neck in 1776 to celebrate the repeal of the Stamp Act." +
+				 " He was also a member of the Committee of Correspondence, a group formed to maintain connections with Patriot groups in other colonies." +
+				 " In 1775 Verree was elected to represent St. Philip''s and St. Michael''s parishes in the First Provincial Congress of South Carolina and" +
+				 " the Second Provincial Congress in 1776. After the formation of the South Carolina General Assembly, Verree represented the" +
+				 " city parishes from 1776 until his death in 1779.' , " +
+				 "'47 Church St Charleston, SC 29401', 'tour7/location12.mp3', 'false')");
+	//Photo 12
+	tx.executeSql("INSERT INTO photo (id, location_id, file_name) VALUES (4, 12, 'Joseph_Verree_House.jpg')");
+
+	
+
+			
+			
+			
+}

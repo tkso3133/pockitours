@@ -1,0 +1,324 @@
+var firstLocationId;
+var firstLocation;
+var id;
+var glatlng1;
+var geocoder = new google.maps.Geocoder();
+var map;
+var spinner;
+var tourLength;
+var locationIdToNavigate;
+var tourFinished;
+var tourHasStarted = true;
+var firstNonCompleted = true;
+
+$(document).ready(function(){
+	var opts = {
+			  lines: 10, // The number of lines to draw
+			  length: 6, // The length of each line
+			  width: 3, // The line thickness
+			  radius: 7, // The radius of the inner circle
+			  corners: 1, // Corner roundness (0..1)
+			  rotate: 0, // The rotation offset
+			  direction: 1, // 1: clockwise, -1: counterclockwise
+			  color: '#fff', // #rgb or #rrggbb or array of colors
+			  speed: 1, // Rounds per second
+			  trail: 60, // Afterglow percentage
+			  shadow: false, // Whether to render a shadow
+			  hwaccel: false, // Whether to use hardware acceleration
+			  className: 'spinner', // The CSS class to assign to the spinner
+			  zIndex: 2e9, // The z-index (defaults to 2000000000)
+			  top: 'auto', // Top position relative to parent in px
+			  left: 'auto' // Left position relative to parent in px
+			};
+	var target = document.getElementById('foo');
+	spinner = new Spinner(opts).spin(target);
+	
+	setTimeout(continueExecution, 0);
+
+	function continueExecution() {
+		test();
+	}
+});
+
+function test() {
+	id = getUrlVars()["id"];
+	window.localStorage.setItem("current_tour_id", id);
+	
+	$('.flexslider').flexslider();
+	
+	var db = window.openDatabase("TechnitoursDB", "1.0", "Technitours Database", 100000);
+	db.transaction(getTourLength, loadError);
+	db.transaction(getTourById, loadError);
+	db.transaction(getTourStartedOrFinishedStatus, loadError); 
+	db.transaction(getLocationsByTourId, loadError);
+}
+
+function getTourLength(tx) {
+	var sql = "SELECT * FROM location WHERE tour_id = " + id;
+	tx.executeSql(sql, [], getTourLength_success);
+}
+
+function getTourLength_success(tx, results) {
+	tourLength = results.rows.length;
+}
+
+function getTourStartedOrFinishedStatus(tx) {
+	var sql = "SELECT * FROM location where tour_id = " + id + " and location_completed = 'false'";
+	tx.executeSql(sql, [], getTourStartedOrFinishedStatus_success)
+}
+
+function getTourStartedOrFinishedStatus_success(tx, results) {
+	var len = results.rows.length;
+	if (len == tourLength) {
+		tourHasStarted = false;
+	}
+	
+	if (len >= 0) {
+		tourFinished = false;
+	}
+}
+
+function getTourById(tx) {
+	var sql = "SELECT * FROM tour WHERE id = " + id;
+	tx.executeSql(sql, [], getTourById_success);
+}
+
+function getTourById_success(tx, results) {
+	var len = results.rows.length;
+	for (var i=0; i<len; i++) {
+		var tour = results.rows.item(i);
+		$('.tourName').append(tour.name);
+		$('.tourDescription').append(tour.description);
+//		$('.blueTourInformationBar').append('<label id="lblTourName">' + tour.name + '</label>');
+		$('body').append('<label id="lblTourName">' + tour.name + '</label>');
+		$('.tourStats').append('<li><span style="font-weight: bold;">Duration: </span>' + tour.duration + '</li>');
+		$('.tourStats').append('<li><span style="font-weight: bold;">Length: </span>' + tour.length + ' miles</li>');
+	}
+}
+
+function getLocationsByTourId(tx) {
+	var sql = "SELECT * FROM location WHERE tour_id = " + id;
+	tx.executeSql(sql, [], getLocationsByTourId_success);
+}
+
+function getLocationsByTourId_success(tx, results) {
+	var len = results.rows.length;
+	tourLength = len;
+	for (var i=0; i<len; i++) {
+		var location = results.rows.item(i);
+		if (i == 0 ) {
+			firstLocation = location;
+		}
+		//if location has been visited - include checkbox image and the ability to view locationDetails page
+		if (!tourHasStarted) {
+			$('#locationList').append('<li class="liLocation" id="liWithoutLink"><div id="locationContainerWithoutLink">' + location.name + '</div></li>');
+			if (i == 0) {
+				firstLocationId = location.id;
+				$('#bottom').append('<div class="startButton"><a class="aStartButton" href="javascript:startTour();"><img id="imgStart" src="img/play_arrow.png"/>Start</a></div>');
+			}
+		}
+		else if (tourFinished) {
+			$('#locationList').append('<li class="liLocation" id="liWithoutLink"><a id="aLocationName" onclick="navigationToLocationDetails(this, ' + location.id + ');"><img id="imgYellowCheckMark" src="img/yellow_check_mark.png"/><div id="locationContainerWithLink">' + location.name + '</div><img id="imgNextArrow" src="img/grey_arrow.png"/></a></li>');
+			if (i == 0) {
+				$('#bottom').append('<div class="startOverButton"><a class="aStartOverButton" href="javascript:startOverTour();"><img id="imgStartOver" src="img/start_over.png"/>Start again</a></div>');
+			}
+		} else {
+			if (location.location_completed == 'true') {
+				$('#locationList').append('<li class="liLocation" id="liWithoutLink"><a id="aLocationName" onclick="navigationToLocationDetails(this, ' + location.id + ');"><img id="imgYellowCheckMark" src="img/yellow_check_mark.png"/><div id="locationContainerWithLink">' + location.name + '</div><img id="imgNextArrow" src="img/grey_arrow.png"/></a></li>');
+			} else {
+				$('#locationList').append('<li class="liLocation" id="liWithoutLink"><div id="locationContainerWithoutLink">' + location.name + '</div></li>');
+				if (firstNonCompleted == true) {
+					$('#bottom').append('<div class="resumeButton"><a class="aResumeButton" href="javascript:resumeTour();"><img id="imgResume" src="img/resume_arrow.png"/>Resume</a></div>');
+					firstNonCompleted = false;
+					firstLocationId = location.id;
+				}
+			}
+		}
+	}
+
+	//insert a spacer at the bottom
+	$('#locationList').append('<li class="liLocation" id="liWithoutLink"><div id="locationContainerWithoutLink"></div></li>');
+	
+	navigator.geolocation.getCurrentPosition(calculateDistanceFromStart, geolocationFailed, { maximumAge: 3000, timeout: 5000, enableHighAccuracy: true });
+}
+
+function calculateDistanceFromStart(p) {
+  var service = new google.maps.DistanceMatrixService();
+  var origin = new google.maps.LatLng(p.coords.latitude, p.coords.longitude);
+  service.getDistanceMatrix(
+    {
+      origins: [origin],
+      destinations: [firstLocation.address],
+      travelMode: google.maps.TravelMode.DRIVING,
+      unitSystem: google.maps.UnitSystem.IMPERIAL,
+      avoidHighways: false,
+      avoidTolls: false
+    }, callback);
+}
+
+function callback(response, status) {
+    var origins = response.originAddresses;
+    for (var i = 0; i < origins.length; i++) {
+      var results = response.rows[i].elements;
+      for (var j = 0; j < results.length; j++) {
+        $('.tourStats').append('<li><span style="font-weight: bold;">Distance from start: </span>' + results[j].distance.text + '</li>');
+      }
+    }
+    killSpinnerAndDisplayDivs();
+}
+
+function geolocationFailed(error) {
+	killSpinnerAndDisplayDivs();
+}
+
+function killSpinnerAndDisplayDivs() {
+    createCSSClass('.top', 'display: block !important;');
+    createCSSClass('.blueTourInformationBar', 'display: block !important;');
+    createCSSClass('.greenFamousLandmarksBar', 'display: block !important;');
+    createCSSClass('.imgGreenFlag', 'display: block !important;');
+    createCSSClass('.imgBlueOpenBook', 'display: block !important;');
+    createCSSClass('.separator', 'display: block !important;');
+    createCSSClass('.tourDescription', 'display: block !important;');
+    createCSSClass('.locationList', 'display: block !important;');
+    createCSSClass('.bottom', 'display: block !important;');
+    createCSSClass('.startOverButton', 'display: block !important;');
+    createCSSClass('.resumeButton', 'display: block !important;');
+    createCSSClass('.startButton', 'display: block !important;');
+    
+    spinner.stop();
+    createCSSClass('.foo', 'background: none !important;');
+
+    //set .scroll and .photos height
+    onOrientationChange();
+}
+
+function setAppropriateHeights(landscape) {	
+	var height = screen.height;
+	var heightOfTop = 45;
+	var heightOfBottom = 50;
+	var scrollHeight = height - heightOfTop - heightOfBottom;
+	var photoHeight = scrollHeight * 0.60;
+	createCSSClass('.scroll', 'height: ' + scrollHeight + 'px !important; overflow: scroll;');
+	createCSSClass('.photos', 'height: ' + photoHeight + 'px !important; width: 100%; z-index: -1;');
+	createCSSClass('.liLocation', 'height: ' + (scrollHeight * .07) + 'px;');
+}
+
+function onOrientationChange() {
+    switch (window.orientation) {
+        case -90:
+        case 90:
+        	setAppropriateHeights(false);
+            break;
+        default:
+        	setAppropriateHeights(true);
+            break;
+    }
+};
+window.onresize = onOrientationChange;
+
+function navigationToLocationDetails(a, location_id) {	
+	//change background color and add timeout so user knows which option they selected
+	a.style.background = "#bbb";
+	locationIdToNavigate = location_id;
+	setTimeout(continueNavigationToLocationDetailsExecution, 300)
+}
+
+function continueNavigationToLocationDetailsExecution() {
+	window.location.href = "../www/locationDetails.html?id=" + locationIdToNavigate + "&fromScreen=tourDetails";
+}
+
+function startTour() {
+	//change font color and add timeout so user knows which option they selected
+	$('.aStartButton').css('color', 'black');
+	setTimeout(continueStartTourExecution, 300)
+}
+
+function continueStartTourExecution() {
+	window.location.href = "../www/navigateToLocation.html?location_id=" + firstLocationId;
+}
+
+function startOverTour() {
+	//change font color and add timeout so user knows which option they selected
+	$('.aStartOverButton').css('color', 'black');
+	setTimeout(continueStartOverTourExecution, 300)
+}
+
+function continueStartOverTourExecution() {
+	window.location.href = "../www/navigateToLocation.html?location_id=" + firstLocation.id;
+}
+
+function resumeTour() {
+	//change font color and add timeout so user knows which option they selected
+	$('.aResumeButton').css('color', 'black');
+	setTimeout(continueResumeTourExecution, 300)
+}
+
+function continueResumeTourExecution() {
+	var nextLocationId = parseInt(firstLocationId)
+	window.location.href = "../www/navigateToLocation.html?location_id=" + nextLocationId;
+}
+
+function openLastLocation() {
+	window.location.href = "../www/locationDetails.html?id=" + firstLocationId + "&fromScreen=navigateToLocation";
+}
+
+
+//  ------- SAVE FOR LATER -------
+
+//function openSelectTransportation() {
+//$("#dialog-confirm").dialog({ resizable: false, draggable: false, closeOnEscape: false, height:200, modal: true });
+//
+//$(".ui-dialog-content").empty();
+//$(".ui-dialog-content").append("<input id='radioDriving' class='radioTransportation' type='radio' name='transportation' value='driving' onclick='enableConfirmButton()'>");
+//$(".ui-dialog-content").append("<label for='radioDriving'>Driving</label><br>");
+//$(".ui-dialog-content").append("<input id='radioWalking' class='radioTransportation' type='radio' name='transportation' value='walking' onclick='enableConfirmButton()'>");
+//$(".ui-dialog-content").append("<label for='radioWalking'>Walking</label><br>");
+//$(".ui-dialog-content").append("<input id='radioBicycling' class='radioTransportation' type='radio' name='transportation' value='bicycling' onclick='enableConfirmButton()'>");
+//$(".ui-dialog-content").append("<label for='radioBicycling'>Bicycling</label><br>");
+//$(".ui-dialog-content").append("<input id='btnConfirm' type='button' value='Confirm' onclick='btnConfirmClick(this)'>");
+//$(".ui-dialog-content").append("<input id='btnCancel' type='button' value='Cancel' onclick='btnCancelClick(this)'>");
+//
+//document.getElementById("btnConfirm").disabled = true;
+//
+//$('.aStartOverButton').css('color', 'grey');
+//$('.aStartButton').css('color', 'grey');
+//}
+//
+//function enableConfirmButton() {
+//document.getElementById("btnConfirm").disabled = false;
+//}
+//
+//function btnCancelClick(btn) {
+////change background color and add timeout so user knows which option they selected
+//btn.style.background = "grey";
+//setTimeout(continueCancelExecution, 300)
+//}
+//
+//function btnConfirmClick(btn) {
+//	//change background color and add timeout so user knows which option they selected
+//	btn.style.background = "green";
+//	setTimeout(continueConfirmExecution, 300)
+//}
+//
+//function continueConfirmExecution() {
+//	//set local storage transportation_method
+//	var radioDriving = document.getElementById("radioDriving");
+//	var radioWalking = document.getElementById("radioWalking");
+//	var radioBicycling = document.getElementById("radioBicycling");
+//	
+//	if (radioDriving.checked) {
+//		window.localStorage.setItem("transportation_method", "DRIVING");
+//	} else if (radioWalking.checked) {
+//		window.localStorage.setItem("transportation_method", "WALKING");
+//	} else if (radioBicycling.checked) {
+//		window.localStorage.setItem("transportation_method", "BICYCLING");
+//	}
+//	
+//	$("#dialog-confirm").dialog("close");
+//	
+//	window.location.href = "../www/navigateToLocation.html?location_id=" + firstLocationId;
+//}
+//
+//function continueCancelExecution() {
+//	$("#dialog-confirm").dialog("close");
+//}

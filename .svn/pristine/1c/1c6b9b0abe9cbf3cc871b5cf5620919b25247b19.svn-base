@@ -1,0 +1,109 @@
+$(document).ready(function(){
+	onOrientationChange();
+	
+	//hide top status bar on android
+	if (isAndroid) {
+		createCSSClass('.statusContainer', 'display: none;');	
+	}
+	
+	SetFontSizesAndDimensionsBasedOnTotalHeight();
+	
+	var db = window.openDatabase("TechnitoursDB", "1.0", "Technitours Database", 100000);
+	db.transaction(getTours, loadError);
+});
+
+function getTours(tx) {
+	var sql = "SELECT * FROM tour";
+	tx.executeSql(sql, [], getTours_success);
+}
+
+function getTours_success(tx, results) {
+	var len = results.rows.length;
+	for (var i=0; i<len; i++) {
+		var tour = results.rows.item(i);
+		
+		//status code
+		var statusImgSrc;
+		var statusImgStyle;
+		var currentTourStatus = window.localStorage.getItem("tour_" + tour.id + "_status");
+		if (currentTourStatus == null) {
+			//status has not been set yet - set to 0
+			window.localStorage.setItem("tour_" + tour.id + "_status", "0");
+			statusImgSrc = 'img/blue_play.png';
+			statusImgStyle = 'imgPlayIcon';
+		} else {
+			switch (currentTourStatus) {
+				case "0":
+					statusImgSrc = 'img/blue_play.png';
+					statusImgStyle = 'imgPlayIcon';
+					break;
+				case "999":
+					statusImgSrc = 'img/green_check_mark.png';
+					statusImgStyle = 'imgCheckIcon';
+					break;
+				default: //somewhere between 0 and 999 - this tour has been started but hasn't been completed
+					statusImgSrc = 'img/yellow_resume.png';
+					statusImgStyle = 'imgResumeIcon';
+					break;
+			}
+		}
+		$('.tourList').append(
+					'<li><a style="height: 100%;" href="tourDetails.html?id=' + tour.id + '">' + 
+						'<div class="tourContainer" style="background: url(img/' + tour.background + ') 50% 50% no-repeat; background-size: cover; height: 100%; position: relative;">' +
+						  '<div class="tourSectionsContainer">' +	
+							'<div class="tourSection">' +
+								'<img class="' + statusImgStyle + '" src="' + statusImgSrc + '"/>' + 
+								'<header class="tourName">' + tour.name + '</header>' +
+							'</div>' +
+							
+							'<div class="tourSection">' +
+								'<img class="imgClock" src="img/grey_clock.png"/>' + 
+								'<label class="tourLabel">' + tour.duration + '</label>' +
+							'</div>' +
+							
+							'<div class="tourSection">' +
+								'<img class="imgDistance" src="img/grey_distance_marker.png"/>' + 
+								'<label class="tourLabelBottom">' + tour.length + ' miles in length</label>' +
+							'</div>' +
+						  '</div>' +	
+						'</div>' +
+					'</a></li>'
+		);
+	}
+}
+
+function setAppropriateHeights() {	
+	var height = screen.height;
+	var heightOfTop = 45;
+	var heightOfLightBlackBlackground = 75;
+	var scrollHeight = height - heightOfTop;
+
+	createCSSClass('.scroll', 'position: absolute; top: 85px; height: ' + scrollHeight + 'px; overflow: scroll; width: ' + window.innerWidth + 'px; -webkit-overflow-scrolling: touch;');
+	createCSSClass('.tourList', 'height: ' + scrollHeight + 'px; overflow: scroll;');
+}
+
+function SetFontSizesAndDimensionsBasedOnTotalHeight() {
+	var totalHeight = window.innerHeight;
+	
+	createCSSClass('.imgPlayIcon', 'width: ' + (totalHeight * .02) + 'px; height: ' + (totalHeight * .025) + 'px; float: left; margin: 3px 0 0 2px;');	
+	createCSSClass('.imgCheckIcon', 'width: ' + (totalHeight * .025) + 'px; height: ' + (totalHeight * .025) + 'px; float: left; margin: 3px 0 0 2px;');
+	createCSSClass('.imgResumeIcon', 'width: ' + (totalHeight * .025) + 'px; height: ' + (totalHeight * .025) + 'px; float: left; margin: 3px 0 0 2px;');
+	createCSSClass('.imgClock', 'width: ' + (totalHeight * .025) + 'px; height: ' + (totalHeight * .025) + 'px; float: left;');
+	createCSSClass('.imgDistance', 'width: ' + (totalHeight * .02) + 'px; height: ' + (totalHeight * .025) + 'px; float: left; margin: 0 0 0 2px;');
+	createCSSClass('.tourName', 'font-size: ' + (totalHeight * .032) + 'px; float: left; margin: 0 0 0 5%;');
+	createCSSClass('.tourLabel', 'font-size: ' + (totalHeight * .03) + 'px; float: left; margin: 0 0 0 5%;');
+	createCSSClass('.tourLabelBottom', 'font-size: ' + (totalHeight * .03) + 'px; float: left; margin: 0 0 0 5%;');
+}
+
+function onOrientationChange() {
+    switch (window.orientation) {
+        case -90:
+        case 90:
+        	setAppropriateHeights();
+            break;
+        default:
+        	setAppropriateHeights();
+            break;
+    }
+};
+window.onresize = onOrientationChange;

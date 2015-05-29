@@ -1,0 +1,36 @@
+.blueTourInformationBar { width: 100%; height: 5%; background-color: #27beda; display: none; }
+.imgBlueOpenBook { float: left; height: 60%; width: 4%; margin: 8px 0 0 5px; display: none; }
+#lblTourName { float: left; margin: 5px 0 0 10px; font-size: 2.75vh; }
+.tourDescription { width: 95%; margin: 10px auto; }
+.greenFamousLandmarksBar { width: 100%; height: 5%; background-color: #75c555; display: none; }
+.imgGreenFlag { float: left; height: 60%; width: 3%; margin: 7px 0 0 8px; display: none; }
+#lblFamousLandmarks { float: left; margin: 7px 0 0 10px; font-size: 2.75vh; }
+#locationList li { background: #f1f3f4; border-bottom: 1px solid #bbb; border-top: 1px solid #fff; }
+#locationList li a { background: #f1f3f4; }
+a { display: block; width: 100%; height: 7%; }
+#imgYellowCheckMark { height: 16px; width: 16px; float: left; margin: 7px 0px 0px 5px; }
+#imgNextArrow { height: 15px; width: 10px; float: right; margin: 8px 3px 0px 0px; }
+#locationContainerWithLink { float: left; margin: 6px 0px 0px 10px; }
+#locationContainerWithoutLink { float: left; margin: 6px 0px 0px 30px; }
+.imgSlider { height: 100%; width: auto; max-width: 100%; margin: 0 auto; text-align: center; }
+.bottom { background: url(../img/bottom_grey_fade.png) repeat-x; height: 50px; float: left; width: 100%; display: none; }
+.locationList { display: none; }
+.photos { position: absolute; margin: 85px 0 0 0; }
+.tourDescription { display: none; }
+.resumeButton { float: right; height: 35px; width: 60px; margin: 5px 12% 0 0; display: none; }
+.startOverButton { float: left; height: 35px; width: 65px; margin: 5px 0 0 12%; display: none; }
+.startButton { height: 35px; width: 35px; margin: 5px auto 0 auto; display: none; }
+#imgStart { height: 15px; width: 15px; margin: 7px 0 0 7px; }
+#imgStartOver { height: 15px; width: 25px; margin: 5px 0 0 19px; }
+#imgResume { height: 15px; width: 20px; margin: 5px 0 0 15px; }
+#bottom a { color: grey; width: 100%; height: 100%; }
+#map-canvas { height: 60%; width: 100%; }
+.separator { width: 100%; height: 2px; margin: 10px auto; background-color: #bbb; display: none; }
+#lblTourName {
+	position: relative;
+	z-index: 10000;
+	color: green;
+	font-size: 20%;
+}
+.ui-dialog-titlebar { background: url(../img/white_flag.png) no-repeat; background-size: 15px 20px; background-position: 5% 10%; margin: 5px 0 0 0; }
+.ui-dialog .ui-dialog-content { height: 230px !important; }
